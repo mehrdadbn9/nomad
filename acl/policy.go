@@ -136,9 +136,10 @@ const (
 	// The following are the fine-grained capabilities that can be granted for
 	// operator-level operations. Deny takes precedence and overwrites all other
 	// capabilities.
-	OperatorCapabilityDeny         = "deny"
-	OperatorCapabilitySnapshotSave = "snapshot-save"
-	OperatorCapabilityLicenseRead  = "license-read"
+	OperatorCapabilityDeny          = "deny"
+	OperatorCapabilitySnapshotSave  = "snapshot-save"
+	OperatorCapabilityLicenseRead   = "license-read"
+	OperatorCapabilityKeyringRotate = "keyring-rotate"
 )
 
 // Policy represents a parsed HCL or JSON policy.
@@ -393,7 +394,8 @@ func isNodePoolCapabilityValid(cap string) bool {
 // isOperatorCapabilityValid ensures the given capability is valid for an operator policy
 func isOperatorCapabilityValid(cap string) bool {
 	switch cap {
-	case OperatorCapabilityDeny, OperatorCapabilitySnapshotSave, OperatorCapabilityLicenseRead:
+	case OperatorCapabilityDeny, OperatorCapabilitySnapshotSave, OperatorCapabilityKeyringRotate,
+		OperatorCapabilityLicenseRead:
 		return true
 	default:
 		return false
@@ -426,7 +428,7 @@ func expandOperatorPolicy(policy string) []string {
 	case PolicyRead:
 		return []string{OperatorCapabilityLicenseRead}
 	case PolicyWrite:
-		return []string{OperatorCapabilitySnapshotSave, OperatorCapabilityLicenseRead}
+		return []string{OperatorCapabilitySnapshotSave, OperatorCapabilityKeyringRotate, OperatorCapabilityLicenseRead}
 	default:
 		return nil
 	}

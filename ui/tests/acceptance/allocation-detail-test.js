@@ -6,7 +6,7 @@
 /* eslint-disable qunit/require-expect */
 /* Mirage fixtures are random so we can't expect a set number of assertions */
 import AdapterError from '@ember-data/adapter/error';
-import { run } from '@ember/runloop';
+import { later } from '@ember/runloop';
 import { currentURL, click, triggerEvent, waitFor } from '@ember/test-helpers';
 import { assign } from '@ember/polyfills';
 import { module, test } from 'qunit';
@@ -402,7 +402,10 @@ module('Acceptance | allocation detail', function (hooks) {
 
     await Allocation.stop.idle();
 
-    run.later(() => {
+    // Schedule assertions during the settle phase — later() integrates with
+    // settled(), so this callback fires while await Allocation.stop.confirm()
+    // is waiting, allowing us to assert the in-flight state before resolving.
+    later(() => {
       assert.ok(Allocation.stop.isDisabled, 'Stop is disabled');
       assert.ok(Allocation.restart.isDisabled, 'Restart is disabled');
       assert.ok(Allocation.restartAll.isDisabled, 'Restart All is disabled');
